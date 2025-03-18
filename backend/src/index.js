@@ -7,6 +7,8 @@ import fileUpload from "express-fileupload"
 
 import path from "path"
 
+import cors from "cors"
+
 import { connectDB } from "./lib/db.js"
 
 import userRoutes from "./routes/user.route.js"
@@ -21,6 +23,11 @@ dotenv.config()
 const __dirname = path.resolve()
 const app = express()
 const PORT = process.env.PORT
+
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true,
+}))
 
 app.use(express.json()) // to parse req.body
 app.use(clerkMiddleware()) // This will add auth to req obj => req.auth
