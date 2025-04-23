@@ -7,7 +7,7 @@ import { HeadphonesIcon, Music, Users } from "lucide-react"
 import { useEffect } from "react"
 
 const FriendsActivity = () => {
-  const { users, fetchUsers}= useChatStore()
+  const { users, fetchUsers, onlineUsers, userActivities }= useChatStore()
   const {user} = useUser()
 
   useEffect(() => {
@@ -15,8 +15,6 @@ const FriendsActivity = () => {
       fetchUsers()
     }
   }, [fetchUsers, user])
-
-  const isPlaying = true
 
   return (
     <div className="h-full bg-zinc-900 rounded-lg flex flex-col">
@@ -33,7 +31,11 @@ const FriendsActivity = () => {
 
       <ScrollArea className="flex-1">
         <div className="p(4 space-y-4">
-          {users.map((user) => (
+          {users.map((user) => {
+            const activity = userActivities.get(user.clerkId)
+            const isPlaying = activity && activity !== "Idle"
+
+            return (
             <div key={user._id}
                  className="cursor-pointer hover:bg-zinc-800/50 p-3 rounded-md transition-colors group"
             >
@@ -47,7 +49,9 @@ const FriendsActivity = () => {
                       {user.fullName[0]}
                     </AvatarFallback>
                   </Avatar>
-                  <div className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-zinc-900 bg-zinc-500`}
+                  <div className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-zinc-900
+                    ${onlineUsers.has(user.clerkId)? "bg-green-500" : "bg-zinc-500"}
+                    `}
                        aria-hidden: true
                   />
                 </div>
@@ -62,10 +66,10 @@ const FriendsActivity = () => {
                   {isPlaying? (
                     <div className="mt-1">
                       <div className="mt-1 text-sm text-white fo,t-medium truncate">
-                        Cardigan
+                        {activity.replace("Playing ", "").split(" by ")[0]}
                       </div>
                       <div className="text-xs text-zinc-400 truncate">
-                        by Taylor Swift
+                        {activity.split(" by ")[1]}
                       </div>
                     </div>
                   ): (
@@ -76,7 +80,7 @@ const FriendsActivity = () => {
                 </div>
               </div>
             </div>
-          ))}
+          )})}
         </div>
       </ScrollArea>
     </div>
